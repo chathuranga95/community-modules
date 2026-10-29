@@ -146,7 +146,7 @@ spec:
             - matches:
                 - headers:
                     - name: x-openchoreo-component
-                      value: ${metadata.componentName}
+                      value: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'
               backendRefs:
                 - name: ${metadata.name}-${trait.instanceName}
                   namespace: ${metadata.namespace}

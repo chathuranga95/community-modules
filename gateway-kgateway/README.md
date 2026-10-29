@@ -44,6 +44,8 @@ kgateway is built on the [Kubernetes Gateway API](https://gateway-api.sigs.k8s.i
 | v1.2.x             | v1.5.1                 | v2.3.1   |
 
 > **Note:** kgateway requires the Gateway API CRDs to be installed in the cluster before it is deployed. OpenChoreo install scripts handle this automatically. The Gateway API version above is the minimum that ships with each OpenChoreo release; newer compatible versions generally work but are not officially verified.
+>
+> **Release lines:** the `kgateway-api-management` trait attaches its policies to each release line's own HTTPRoute, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply `kgateway-api-management-trait.yaml` from commit [`a87c195`](https://github.com/openchoreo/community-modules/blob/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/gateway-kgateway/kgateway-api-management-trait.yaml).
 
 ---
 

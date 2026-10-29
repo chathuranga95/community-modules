@@ -142,17 +142,17 @@ spec:
         apiVersion: http.keda.sh/v1beta1
         kind: InterceptorRoute
         metadata:
-          name: ${oc_generate_name(metadata.componentName, endpoint.key)}
+          name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, endpoint.key)}'
           namespace: ${metadata.namespace}
           labels: ${metadata.labels}
         spec:
           target:
-            service: ${oc_dns_label(metadata.componentName, "keda-upstream")}
+            service: '${oc_dns_label(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, "keda-upstream")}'
             port: ${endpoint.value.port}
           rules:
             - hosts:
-                - ${metadata.componentName + "." + metadata.namespace + ".svc.cluster.local"}
-                - ${metadata.componentName + "." + metadata.namespace}
+                - '${(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName) + "." + metadata.namespace + ".svc.cluster.local"}'
+                - '${(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName) + "." + metadata.namespace}'
           scalingMetric:
             requestRate:
               targetValue: ${parameters.requestRateTargetValue}
@@ -168,7 +168,7 @@ spec:
         apiVersion: keda.sh/v1alpha1
         kind: ScaledObject
         metadata:
-          name: ${oc_generate_name(metadata.componentName, endpoint.key)}
+          name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, endpoint.key)}'
           namespace: ${metadata.namespace}
           labels: ${metadata.labels}
         spec:
@@ -186,14 +186,14 @@ spec:
             - type: external-push
               metadata:
                 scalerAddress: ${parameters.interceptorScalerService + "." + parameters.interceptorNamespace + ":" + string(parameters.interceptorScalerPort)}
-                interceptorRoute: ${oc_generate_name(metadata.componentName, endpoint.key)}
+                interceptorRoute: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, endpoint.key)}'
 
     - includeWhen: '${parameters.trigger.type == "" && size(workload.endpoints.transformList(name, ep, ("external" in ep.visibility && ep.type in ["HTTP", "GraphQL", "Websocket"]) ? [name] : []).flatten()) == 1}'
       template:
         apiVersion: gateway.kgateway.dev/v1alpha1
         kind: Backend
         metadata:
-          name: ${oc_generate_name(metadata.componentName, "keda-interceptor")}
+          name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, "keda-interceptor")}'
           namespace: ${metadata.namespace}
           labels: ${metadata.labels}
         spec:
@@ -208,7 +208,7 @@ spec:
         apiVersion: v1
         kind: Service
         metadata:
-          name: ${oc_dns_label(metadata.componentName, "keda-upstream")}
+          name: '${oc_dns_label(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, "keda-upstream")}'
           namespace: ${metadata.namespace}
           labels: ${metadata.labels}
         spec:
@@ -229,37 +229,37 @@ spec:
         group: gateway.networking.k8s.io
         version: v1
         kind: HTTPRoute
-        where: '${parameters.trigger.type == "" && has(resource.metadata.labels) && resource.metadata.labels["openchoreo.dev/endpoint-visibility"] == "external" && resource.spec.rules.exists(r, has(r.backendRefs) && r.backendRefs.exists(b, b.name == metadata.componentName)) && has(resource.spec.rules[0].filters) && resource.spec.rules[0].filters.exists(f, f.type == "URLRewrite")}'
+        where: '${parameters.trigger.type == "" && has(resource.metadata.labels) && resource.metadata.labels["openchoreo.dev/endpoint-visibility"] == "external" && resource.spec.rules.exists(r, has(r.backendRefs) && r.backendRefs.exists(b, b.name == (metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName))) && has(resource.spec.rules[0].filters) && resource.spec.rules[0].filters.exists(f, f.type == "URLRewrite")}'
       operations:
         - op: add
           path: /spec/rules/[*]/filters/[?(@.type=='URLRewrite')]/urlRewrite/hostname
-          value: ${metadata.componentName + "." + metadata.namespace + ".svc.cluster.local"}
+          value: '${(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName) + "." + metadata.namespace + ".svc.cluster.local"}'
 
     - target:
         group: gateway.networking.k8s.io
         version: v1
         kind: HTTPRoute
-        where: '${parameters.trigger.type == "" && has(resource.metadata.labels) && resource.metadata.labels["openchoreo.dev/endpoint-visibility"] == "external" && resource.spec.rules.exists(r, has(r.backendRefs) && r.backendRefs.exists(b, b.name == metadata.componentName)) && !(has(resource.spec.rules[0].filters) && resource.spec.rules[0].filters.exists(f, f.type == "URLRewrite"))}'
+        where: '${parameters.trigger.type == "" && has(resource.metadata.labels) && resource.metadata.labels["openchoreo.dev/endpoint-visibility"] == "external" && resource.spec.rules.exists(r, has(r.backendRefs) && r.backendRefs.exists(b, b.name == (metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName))) && !(has(resource.spec.rules[0].filters) && resource.spec.rules[0].filters.exists(f, f.type == "URLRewrite"))}'
       operations:
         - op: add
           path: /spec/rules/[*]/filters/-
           value:
             type: URLRewrite
             urlRewrite:
-              hostname: ${metadata.componentName + "." + metadata.namespace + ".svc.cluster.local"}
+              hostname: '${(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName) + "." + metadata.namespace + ".svc.cluster.local"}'
 
     - target:
         group: gateway.networking.k8s.io
         version: v1
         kind: HTTPRoute
-        where: '${parameters.trigger.type == "" && has(resource.metadata.labels) && resource.metadata.labels["openchoreo.dev/endpoint-visibility"] == "external" && resource.spec.rules.exists(r, has(r.backendRefs) && r.backendRefs.exists(b, b.name == metadata.componentName))}'
+        where: '${parameters.trigger.type == "" && has(resource.metadata.labels) && resource.metadata.labels["openchoreo.dev/endpoint-visibility"] == "external" && resource.spec.rules.exists(r, has(r.backendRefs) && r.backendRefs.exists(b, b.name == (metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName)))}'
       operations:
         - op: replace
-          path: /spec/rules/[*]/backendRefs/[?(@.name=='${metadata.componentName}')]
+          path: '/spec/rules/[*]/backendRefs/[?(@.name==''${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'')]'
           value:
             group: gateway.kgateway.dev
             kind: Backend
-            name: ${oc_generate_name(metadata.componentName, "keda-interceptor")}
+            name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, "keda-interceptor")}'
             weight: 1
         - op: add
           path: /spec/rules/[*]/timeouts
@@ -270,7 +270,7 @@ spec:
         group: ""
         version: v1
         kind: Service
-        where: '${parameters.trigger.type == "" && resource.metadata.name == metadata.componentName}'
+        where: '${parameters.trigger.type == "" && resource.metadata.name == (metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName)}'
       operations:
         - op: replace
           path: /spec/type

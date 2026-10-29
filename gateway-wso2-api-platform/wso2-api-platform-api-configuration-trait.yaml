@@ -126,7 +126,7 @@ spec:
         apiVersion: gateway.kgateway.dev/v1alpha1
         kind: Backend
         metadata:
-          name: ${metadata.componentName}-api-gw-backend
+          name: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}-api-gw-backend'
           namespace: ${metadata.namespace}
         spec:
           type: Static
@@ -147,12 +147,12 @@ spec:
           name: ${metadata.name}
           namespace: ${metadata.namespace}
         spec:
-          displayName: ${metadata.environmentName}-${metadata.componentNamespace}-${metadata.componentName}
+          displayName: '${metadata.environmentName}-${metadata.componentNamespace}-${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'
           version: v1.0
-          context: /${metadata.environmentName}-${metadata.componentNamespace}-${metadata.componentName}
+          context: '/${metadata.environmentName}-${metadata.componentNamespace}-${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'
           upstream:
             main:
-              url: http://${metadata.componentName}.${metadata.namespace}:${workload.toServicePorts()[0].port}
+              url: 'http://${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}.${metadata.namespace}:${workload.toServicePorts()[0].port}'
           policies: >-
             ${[{"name": "cors", "version": "v1", "params": {"allowedOrigins": ["*"], "allowedMethods": ["*"], "allowedHeaders": ["*"]}}]
               + (parameters.jwtAuth.enabled ? [{"name": "jwt-auth", "version": "v1"}] : [])
@@ -186,11 +186,11 @@ spec:
         kind: HTTPRoute
       operations:
         - op: replace
-          path: /spec/rules/0/backendRefs/[?(@.name=='${metadata.componentName}')]
+          path: '/spec/rules/0/backendRefs/[?(@.name==''${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'')]'
           value:
             group: gateway.kgateway.dev
             kind: Backend
-            name: ${metadata.componentName}-api-gw-backend
+            name: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}-api-gw-backend'
 
     # --- Patch HTTPRoute: Update URL rewrite to derived API context path ---
     # Sets the replacePrefixMatch to /<environment>-<namespace>-<componentName>,
@@ -199,6 +199,6 @@ spec:
           path: /spec/rules/0/filters/0/urlRewrite/path
           value:
             type: ReplacePrefixMatch
-            replacePrefixMatch: /${metadata.environmentName}-${metadata.componentNamespace}-${metadata.componentName}
+            replacePrefixMatch: '/${metadata.environmentName}-${metadata.componentNamespace}-${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'
 
 ---

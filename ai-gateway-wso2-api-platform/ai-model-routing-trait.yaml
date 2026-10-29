@@ -170,9 +170,9 @@ spec:
           name: ${metadata.name}-${trait.instanceName}-llm
           namespace: ${metadata.namespace}
         spec:
-          displayName: ${metadata.environmentName}-${metadata.componentName}-${trait.instanceName}
+          displayName: '${metadata.environmentName}-${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}-${trait.instanceName}'
           version: v1.0
-          context: /${metadata.environmentName}-${metadata.componentNamespace}-${metadata.componentName}-${trait.instanceName}
+          context: '/${metadata.environmentName}-${metadata.componentNamespace}-${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}-${trait.instanceName}'
           provider:
             id: ${parameters.providerRef}
           policies: >-
@@ -211,7 +211,7 @@ spec:
           path: /spec/template/spec/containers/0/env/-
           value:
             name: OPENAI_BASE_URL
-            value: "http://${parameters.gatewayRuntimeName}.${parameters.gatewayRuntimeNamespace}:${parameters.gatewayRuntimePort}/${metadata.environmentName}-${metadata.componentNamespace}-${metadata.componentName}-${trait.instanceName}"
+            value: 'http://${parameters.gatewayRuntimeName}.${parameters.gatewayRuntimeNamespace}:${parameters.gatewayRuntimePort}/${metadata.environmentName}-${metadata.componentNamespace}-${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}-${trait.instanceName}'
         # OPENAI_API_KEY — placeholder so OpenAI SDKs initialize. The real
         # upstream credential lives on the shared LlmProvider at the gateway.
         - op: add

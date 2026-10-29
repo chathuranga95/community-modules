@@ -341,7 +341,7 @@ spec:
             - matches:
                 - headers:
                     - name: x-openchoreo-component
-                      value: ${metadata.componentName}
+                      value: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'
               backendRefs:
                 - name: ${metadata.name}-${trait.instanceName}-llm
                   namespace: ${metadata.namespace}
@@ -440,4 +440,4 @@ spec:
           path: /spec/template/spec/containers/0/env/-
           value:
             name: X_OPENCHOREO_COMPONENT
-            value: ${metadata.componentName}
+            value: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'

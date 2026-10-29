@@ -41,6 +41,8 @@ Envoy Gateway is a pluggable replacement for the default kgateway in the OpenCho
 | v1.2.x             | v1.5.1                 | v1.8.x        |
 
 > **Note:** The Gateway API version is the one OpenChoreo installs with its data plane; the Envoy Gateway version is the one this module installs (see [Installation](#installation)). This mapping follows the official [Envoy Gateway compatibility matrix](https://gateway.envoyproxy.io/news/releases/matrix/) — e.g. Envoy Gateway v1.7 compiles in Gateway API v1.4.1, and v1.8 compiles in v1.5.1. Installing a mismatched Envoy Gateway version risks CRD schema conflicts with the Gateway API CRDs already present in the cluster. The trait's `BackendTLSPolicy` uses `gateway.networking.k8s.io/v1`, which is served on Gateway API v1.4.0+ (all supported OpenChoreo releases).
+>
+> **Release lines:** the `envoy-gateway-api-configuration` trait attaches its policies to each release line's own HTTPRoute, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply `envoy-gateway-api-configuration-trait.yaml` from commit [`a87c195`](https://github.com/openchoreo/community-modules/blob/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/gateway-envoy-gateway/envoy-gateway-api-configuration-trait.yaml).
 
 ---
 

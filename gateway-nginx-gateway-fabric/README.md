@@ -47,6 +47,8 @@ NGINX Gateway Fabric is a pluggable replacement for the default kgateway in the 
 > **Trait feature availability:** The `nginx-gateway-fabric-api-configuration` trait uses `RateLimitPolicy` and Basic-auth `AuthenticationFilter`, **both introduced in NGF 2.4.0** and both available on NGINX OSS. All rows above therefore support the trait. JWT and OIDC authentication were added in NGF 2.5.0 and require **NGINX Plus** (see [Customization](#customization)).
 >
 > **Do not re-install Gateway API CRDs.** The NGF Helm chart does **not** bundle the upstream Gateway API CRDs — normally you install them as a prerequisite. In OpenChoreo they are **already installed** at the matching version, and OpenChoreo enforces a `ValidatingAdmissionPolicy` (`safe-upgrades.gateway.networking.k8s.io`) that rejects installing Gateway API CRDs older than the running version. Skip NGF's "install Gateway API CRDs" step entirely.
+>
+> **Release lines:** the `nginx-gateway-fabric-api-configuration` trait attaches its policies to each release line's own HTTPRoute, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply `nginx-gateway-fabric-api-configuration-trait.yaml` from commit [`a87c195`](https://github.com/openchoreo/community-modules/blob/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/gateway-nginx-gateway-fabric/nginx-gateway-fabric-api-configuration-trait.yaml).
 
 ---
 

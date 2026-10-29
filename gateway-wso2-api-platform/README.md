@@ -12,6 +12,7 @@ This document provides comprehensive documentation for integrating WSO2 API Plat
 - [Configuration](#configuration)
 - [Maintenance](#maintenance)
 - [Customization](#customization)
+- [Compatibility](#compatibility)
 
 ---
 
@@ -1141,3 +1142,9 @@ gateway:
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 ```
+
+---
+
+## Compatibility
+
+The `api-management` trait gives each release line its own API and Backend, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply `wso2-api-platform-api-configuration-trait.yaml` from commit [`a87c195`](https://github.com/openchoreo/community-modules/blob/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/gateway-wso2-api-platform/wso2-api-platform-api-configuration-trait.yaml).

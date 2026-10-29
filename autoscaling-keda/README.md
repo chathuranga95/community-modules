@@ -214,3 +214,7 @@ kubectl delete \
 # optionally:
 # helm uninstall keda-add-ons-http keda -n keda
 ```
+
+## Compatibility
+
+The `keda-scaling` trait names its KEDA objects and routing after each release line, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply `keda-scaling-trait.yaml` from commit [`a87c195`](https://github.com/openchoreo/community-modules/blob/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/autoscaling-keda/keda-scaling-trait.yaml).

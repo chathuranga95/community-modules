@@ -54,3 +54,7 @@ The `deployment/micro-integrator` component type exposes these per-environment s
 | Directory | Description |
 |---|---|
 | [`hello-world-mi/`](./hello-world-mi/) | Simple REST API returning `{"Hello": "World"}` |
+
+## Compatibility
+
+The `micro-integrator` component type gives each release line its own Service and routes, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply `micro-integrator.yaml` from commit [`a87c195`](https://github.com/openchoreo/community-modules/blob/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/componenttype-micro-integrator/micro-integrator.yaml).

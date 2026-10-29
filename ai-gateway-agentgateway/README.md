@@ -530,8 +530,12 @@ spec:
 
 ## Injected Environment Variables
 
-| Variable                 | Trait               | Value                                          |
-|--------------------------|---------------------|------------------------------------------------|
-| `OPENAI_BASE_URL`        | `ai-llm-routing`    | `http://<gatewayName>.<gatewayNamespace>`      |
-| `MCP_GATEWAY_URL`        | `ai-mcp-federation` | `http://<gatewayName>.<gatewayNamespace>:3000` |
-| `X_OPENCHOREO_COMPONENT` | Both                | Component name (for per-component routing)     |
+| Variable                 | Trait               | Value                                                                                                        |
+|--------------------------|---------------------|--------------------------------------------------------------------------------------------------------------|
+| `OPENAI_BASE_URL`        | `ai-llm-routing`    | `http://<gatewayName>.<gatewayNamespace>`                                                                    |
+| `MCP_GATEWAY_URL`        | `ai-mcp-federation` | `http://<gatewayName>.<gatewayNamespace>:3000`                                                               |
+| `X_OPENCHOREO_COMPONENT` | Both                | Component name, or the release line's `<component>-<line>-<hash>` name on a line (for per-component routing) |
+
+## Compatibility
+
+The `ai-llm-routing` and `ai-mcp-federation` traits route each release line by its own `X_OPENCHOREO_COMPONENT` value, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply the traits from commit [`a87c195`](https://github.com/openchoreo/community-modules/tree/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/ai-gateway-agentgateway).
