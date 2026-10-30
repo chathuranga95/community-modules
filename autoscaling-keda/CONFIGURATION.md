@@ -142,7 +142,7 @@ These values are per-component, so different components in the same cluster can 
 The HTTP path needs a specific shape from the component type:
 
 - A Deployment named `${metadata.name}`
-- A Service named `${metadata.componentName}`
+- A Service named `${metadata.componentName}`, or `${metadata.componentLineName}` on a release line
 - Exactly one external `HTTPRoute` carrying the `openchoreo.dev/endpoint-visibility: external` label
 - For service-style path routing, a `URLRewrite` filter is expected. For web-application-style host routing, the trait adds a hostname-only `URLRewrite` filter.
 
@@ -177,17 +177,17 @@ This is deliberately simpler than a per-data-plane backend switch. Heterogeneous
 
 Both modes patch the Deployment to remove `spec.replicas`, which hands replica ownership to KEDA. If `spec.replicas` stuck around, server-side apply would reset it on every render and fight the autoscaler.
 
-The three HTTP-mode `HTTPRoute` patches (repoint the `backendRef`, add the `request` timeout, add the `urlRewrite.hostname`) only apply while keda still owns the external route, i.e. a `backendRef` named after the component is still present. If another edge trait attached ahead of `keda-scaling` has already repointed the route, keda skips those three patches and keeps only the ExternalName/interceptor wiring. See [Composing with an API gateway trait](#composing-with-an-api-gateway-trait).
+The three HTTP-mode `HTTPRoute` patches (repoint the `backendRef`, add the `request` timeout, add the `urlRewrite.hostname`) only apply while keda still owns the external route, i.e. a `backendRef` named after the component's Service is still present. If another edge trait attached ahead of `keda-scaling` has already repointed the route, keda skips those three patches and keeps only the ExternalName/interceptor wiring. See [Composing with an API gateway trait](#composing-with-an-api-gateway-trait).
 
 ### In-cluster wake: the ExternalName alias mechanism
 
 OpenChoreo connection bindings inject the callee's in-cluster Service URL (`http://<component>.<ns>.svc.cluster.local:<port>`). Left alone, that URL goes straight to the Deployment pods and gets refused while the service sleeps.
 
-In HTTP mode the trait closes that gap:
+In HTTP mode the trait closes that gap. Below, `<name>` is `${metadata.componentName}`, or `${metadata.componentLineName}` on a release line:
 
-1. The component's own Service (named `${metadata.componentName}`) is patched to `type: ExternalName`, with `externalName` pointing at `keda-add-ons-http-interceptor-multiport.<interceptorNamespace>.svc.cluster.local`. An in-cluster call to the injected URL now resolves to the interceptor.
-2. A separate ClusterIP Service (`${componentName}-keda-upstream`) is created with the original pod selector and ports. The `InterceptorRoute` forwards here once a pod is ready.
-3. The `InterceptorRoute` registers two `rules[].hosts` entries: the component's FQDN (`<componentName>.<namespace>.svc.cluster.local`) and its two-label form (`<componentName>.<namespace>`). The HTTPRoute patch adds a `urlRewrite.hostname` filter that rewrites the outbound Host header to the FQDN, so gateway traffic and in-cluster traffic match the same interceptor rule. The two-label host is what an edge API-gateway trait sends when it fronts the component (see [Composing with an API gateway trait](#composing-with-an-api-gateway-trait)).
+1. The component's own Service (named `<name>`) is patched to `type: ExternalName`, with `externalName` pointing at `keda-add-ons-http-interceptor-multiport.<interceptorNamespace>.svc.cluster.local`. An in-cluster call to the injected URL now resolves to the interceptor.
+2. A separate ClusterIP Service (`<name>-keda-upstream`) is created with the original pod selector and ports. The `InterceptorRoute` forwards here once a pod is ready.
+3. The `InterceptorRoute` registers two `rules[].hosts` entries: the component's FQDN (`<name>.<namespace>.svc.cluster.local`) and its two-label form (`<name>.<namespace>`). The HTTPRoute patch adds a `urlRewrite.hostname` filter that rewrites the outbound Host header to the FQDN, so gateway traffic and in-cluster traffic match the same interceptor rule. The two-label host is what an edge API-gateway trait sends when it fronts the component (see [Composing with an API gateway trait](#composing-with-an-api-gateway-trait)).
 
 The Service is born as ExternalName on first render, so there's no ClusterIP-to-ExternalName mutation to trip over. If you convert a long-lived component and the data-plane apply rejects the in-place Service type change, redeploy the component so the Service is recreated from scratch.
 

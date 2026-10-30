@@ -950,7 +950,7 @@ creates:
         targetRefs:
           - group: gateway.networking.k8s.io
             kind: HTTPRoute
-            name: ${oc_generate_name(metadata.componentName, parameters.endpointName)}
+            name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, parameters.endpointName)}'
         rateLimit:
           type: Local
           local:

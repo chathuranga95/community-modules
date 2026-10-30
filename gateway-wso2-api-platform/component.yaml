@@ -162,7 +162,8 @@ spec:
 #    Client → kgateway (TLS, hostname routing) → WSO2 Router (policies) → Service → Pod
 #
 # 3. Context Path Pattern:
-#    /<environment>-<namespace>-<componentName>
+#    /<environment>-<namespace>-<name>
+#    (<name> is the component name, or the release line's name on a line)
 #    Example: /development-default-greeting-service
 #
 # 4. Available Policies:

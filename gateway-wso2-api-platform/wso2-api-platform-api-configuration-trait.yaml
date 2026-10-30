@@ -11,11 +11,12 @@
 # is redirected through the WSO2 router via a kgateway Backend resource.
 #
 # Derived values (not user-configurable):
-#   - displayName: <environment>-<namespace>-<componentName>
-#   - context:     /<environment>-<namespace>-<componentName>
+#   - displayName: <environment>-<namespace>-<name>
+#   - context:     /<environment>-<namespace>-<name>
 #   - version:     v1.0
-#   - upstream:    http://<componentName>.<namespace>:<first endpoint port>
+#   - upstream:    http://<name>.<namespace>:<first endpoint port>
 #   - operations:  All methods (GET, POST, PUT, PATCH, DELETE, OPTIONS) on /*
+# <name> is the component name, or the release line's componentLineName on a line.
 #
 # Optional policies (disabled by default):
 #   - jwtAuth:    JWT authentication (key manager config in gateway-configuration ConfigMap)
@@ -193,7 +194,7 @@ spec:
             name: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}-api-gw-backend'
 
     # --- Patch HTTPRoute: Update URL rewrite to derived API context path ---
-    # Sets the replacePrefixMatch to /<environment>-<namespace>-<componentName>,
+    # Sets the replacePrefixMatch to /<environment>-<namespace>-<name>,
     # matching the RestApi context so the WSO2 router can route correctly.
         - op: replace
           path: /spec/rules/0/filters/0/urlRewrite/path

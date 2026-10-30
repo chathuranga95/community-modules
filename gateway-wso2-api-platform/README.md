@@ -404,14 +404,14 @@ The `api-management` ClusterTrait provides declarative API management for compon
 
 #### Derived Values (automatic)
 
-The following values are automatically derived from component metadata and workload endpoints — they are not user-configurable:
+The following values are automatically derived from component metadata and workload endpoints — they are not user-configurable. `<name>` is the component name, or the release line's `<component>-<line>-<hash>` name on a line:
 
 | Value         | Pattern                                                      | Example                                 |
 | ------------- | ------------------------------------------------------------ | --------------------------------------- |
-| `displayName` | `<environment>-<namespace>-<componentName>`                  | `development-default-greeting-service`  |
-| `context`     | `/<environment>-<namespace>-<componentName>`                 | `/development-default-greeting-service` |
+| `displayName` | `<environment>-<namespace>-<name>`                           | `development-default-greeting-service`  |
+| `context`     | `/<environment>-<namespace>-<name>`                          | `/development-default-greeting-service` |
 | `version`     | `v1.0`                                                       | `v1.0`                                  |
-| `upstream`    | `http://<componentName>.<namespace>:<first endpoint port>`   | `http://greeting-service.default:9090`  |
+| `upstream`    | `http://<name>.<namespace>:<first endpoint port>`            | `http://greeting-service.default:9090`  |
 | `operations`  | All methods (GET, POST, PUT, PATCH, DELETE, OPTIONS) on `/*` | —                                       |
 
 #### Trait Parameters
@@ -436,7 +436,7 @@ The trait uses OpenChoreo's template rendering pipeline to:
 
 3. **Patch the HTTPRoute backendRef** — Replaces the component's Service in the HTTPRoute `backendRef` with the kgateway `Backend` pointing to the WSO2 router. This redirects all traffic through the WSO2 API Platform for policy enforcement.
 
-4. **Patch the HTTPRoute URL rewrite** — Updates the `URLRewrite` filter's `replacePrefixMatch` to use the derived API context path (`/<environment>-<namespace>-<componentName>`), ensuring the WSO2 router receives the correct path prefix to match the `RestApi` configuration.
+4. **Patch the HTTPRoute URL rewrite** — Updates the `URLRewrite` filter's `replacePrefixMatch` to use the derived API context path (`/<environment>-<namespace>-<name>`), ensuring the WSO2 router receives the correct path prefix to match the `RestApi` configuration.
 
 #### Composing with KEDA scale-to-zero
 
