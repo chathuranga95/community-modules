@@ -530,11 +530,11 @@ spec:
 
 ## Injected Environment Variables
 
-| Variable                 | Trait               | Value                                                                                                        |
-|--------------------------|---------------------|--------------------------------------------------------------------------------------------------------------|
-| `OPENAI_BASE_URL`        | `ai-llm-routing`    | `http://<gatewayName>.<gatewayNamespace>`                                                                    |
-| `MCP_GATEWAY_URL`        | `ai-mcp-federation` | `http://<gatewayName>.<gatewayNamespace>:3000`                                                               |
-| `X_OPENCHOREO_COMPONENT` | Both                | Component name, or the release line's `<component>-<line>-<hash>` name on a line (for per-component routing) |
+| Variable                 | Trait                                               | Value                                                                                                        |
+|--------------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| `OPENAI_BASE_URL`        | `ai-llm-routing`                                    | `http://<gatewayName>.<gatewayNamespace>`                                                                    |
+| `MCP_GATEWAY_URL`        | `ai-mcp-federation`                                 | `http://<gatewayName>.<gatewayNamespace>:3000`                                                               |
+| `X_OPENCHOREO_COMPONENT` | `ai-llm-routing`, and `ai-mcp-federation` on a line | Component name, or the release line's `<component>-<line>-<hash>` name on a line (for per-component routing) |
 
 ## Compatibility
 

@@ -8,7 +8,8 @@
 #   - Aggregate remote MCP servers behind one endpoint (tool federation)
 #   - Centralized JWT authentication for all tool access
 #   - Per-environment rate limiting
-#   - Single MCP_GATEWAY_URL env var injected into the component
+#   - Single MCP_GATEWAY_URL env var injected into the component, plus
+#     X_OPENCHOREO_COMPONENT on a release line
 #
 # The trait creates an AgentgatewayBackend with all MCP targets,
 # an HTTPRoute, and optional auth/rate-limit AgentgatewayPolicies.
@@ -213,3 +214,16 @@ spec:
           value:
             name: MCP_GATEWAY_URL
             value: "http://${parameters.gatewayName}.${parameters.gatewayNamespace}:3000"
+    # X_OPENCHOREO_COMPONENT — header value for a release line's route, unless
+    # ai-llm-routing already added it
+    - target:
+        group: apps
+        version: v1
+        kind: Deployment
+        where: '${metadata.releaseLineName != "" && !resource.spec.template.spec.containers[0].?env.orValue([]).exists(e, e.name == "X_OPENCHOREO_COMPONENT")}'
+      operations:
+        - op: add
+          path: /spec/template/spec/containers/0/env/-
+          value:
+            name: X_OPENCHOREO_COMPONENT
+            value: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'

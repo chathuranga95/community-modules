@@ -151,7 +151,7 @@ spec:
           hostnames: |
             ${[gateway.ingress.external.?http, gateway.ingress.external.?https]
               .filter(g, g.hasValue()).map(g, g.value().host).distinct()
-              .map(h, (metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName) + "-" + metadata.environmentName + "-" + metadata.componentNamespace + "." + h)}
+              .map(h, (metadata.releaseLineName == "" ? metadata.componentName + "-" + metadata.environmentName + "-" + metadata.componentNamespace : oc_dns_label(metadata.componentLineName, metadata.environmentName, metadata.componentNamespace)) + "." + h)}
           rules:
           - matches:
             - path:
