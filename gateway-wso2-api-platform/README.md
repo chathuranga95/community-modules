@@ -12,6 +12,7 @@ This document provides comprehensive documentation for integrating WSO2 API Plat
 - [Configuration](#configuration)
 - [Maintenance](#maintenance)
 - [Customization](#customization)
+- [Compatibility](#compatibility)
 
 ---
 
@@ -403,14 +404,14 @@ The `api-management` ClusterTrait provides declarative API management for compon
 
 #### Derived Values (automatic)
 
-The following values are automatically derived from component metadata and workload endpoints — they are not user-configurable:
+The following values are automatically derived from component metadata and workload endpoints — they are not user-configurable. `<name>` is the component name, or the release line's `<component>-<line>-<hash>` name on a line:
 
 | Value         | Pattern                                                      | Example                                 |
 | ------------- | ------------------------------------------------------------ | --------------------------------------- |
-| `displayName` | `<environment>-<namespace>-<componentName>`                  | `development-default-greeting-service`  |
-| `context`     | `/<environment>-<namespace>-<componentName>`                 | `/development-default-greeting-service` |
+| `displayName` | `<environment>-<namespace>-<name>`                           | `development-default-greeting-service`  |
+| `context`     | `/<environment>-<namespace>-<name>`                          | `/development-default-greeting-service` |
 | `version`     | `v1.0`                                                       | `v1.0`                                  |
-| `upstream`    | `http://<componentName>.<namespace>:<first endpoint port>`   | `http://greeting-service.default:9090`  |
+| `upstream`    | `http://<name>.<namespace>:<first endpoint port>`            | `http://greeting-service.default:9090`  |
 | `operations`  | All methods (GET, POST, PUT, PATCH, DELETE, OPTIONS) on `/*` | —                                       |
 
 #### Trait Parameters
@@ -435,7 +436,7 @@ The trait uses OpenChoreo's template rendering pipeline to:
 
 3. **Patch the HTTPRoute backendRef** — Replaces the component's Service in the HTTPRoute `backendRef` with the kgateway `Backend` pointing to the WSO2 router. This redirects all traffic through the WSO2 API Platform for policy enforcement.
 
-4. **Patch the HTTPRoute URL rewrite** — Updates the `URLRewrite` filter's `replacePrefixMatch` to use the derived API context path (`/<environment>-<namespace>-<componentName>`), ensuring the WSO2 router receives the correct path prefix to match the `RestApi` configuration.
+4. **Patch the HTTPRoute URL rewrite** — Updates the `URLRewrite` filter's `replacePrefixMatch` to use the derived API context path (`/<environment>-<namespace>-<name>`), ensuring the WSO2 router receives the correct path prefix to match the `RestApi` configuration.
 
 #### Composing with KEDA scale-to-zero
 
@@ -1141,3 +1142,9 @@ gateway:
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 ```
+
+---
+
+## Compatibility
+
+The `api-management` trait gives each release line its own API and Backend, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply `wso2-api-platform-api-configuration-trait.yaml` from commit [`a87c195`](https://github.com/openchoreo/community-modules/blob/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/gateway-wso2-api-platform/wso2-api-platform-api-configuration-trait.yaml).

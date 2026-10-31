@@ -341,7 +341,7 @@ spec:
             - matches:
                 - headers:
                     - name: x-openchoreo-component
-                      value: ${metadata.componentName}
+                      value: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'
               backendRefs:
                 - name: ${metadata.name}-${trait.instanceName}-llm
                   namespace: ${metadata.namespace}
@@ -435,9 +435,16 @@ spec:
           value:
             name: OPENAI_BASE_URL
             value: "http://${parameters.gatewayName}.${parameters.gatewayNamespace}"
-        # X_OPENCHOREO_COMPONENT — header value for per-component routing
+    # X_OPENCHOREO_COMPONENT — header value for per-component routing, unless
+    # ai-mcp-federation already added it
+    - target:
+        group: apps
+        version: v1
+        kind: Deployment
+        where: '${!resource.spec.template.spec.containers[0].?env.orValue([]).exists(e, e.name == "X_OPENCHOREO_COMPONENT")}'
+      operations:
         - op: add
           path: /spec/template/spec/containers/0/env/-
           value:
             name: X_OPENCHOREO_COMPONENT
-            value: ${metadata.componentName}
+            value: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'

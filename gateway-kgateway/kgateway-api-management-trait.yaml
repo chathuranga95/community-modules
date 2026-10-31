@@ -206,7 +206,7 @@ spec:
           targetRefs:
             - group: gateway.networking.k8s.io
               kind: HTTPRoute
-              name: ${oc_generate_name(metadata.componentName, parameters.endpointName)}
+              name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, parameters.endpointName)}'
           jwtAuth:
             extensionRef:
               name: ${metadata.name}-${trait.instanceName}-jwt
@@ -226,7 +226,7 @@ spec:
           targetRefs:
             - group: gateway.networking.k8s.io
               kind: HTTPRoute
-              name: ${oc_generate_name(metadata.componentName, parameters.endpointName)}
+              name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, parameters.endpointName)}'
           rateLimit:
             local:
               tokenBucket:
@@ -249,7 +249,7 @@ spec:
           targetRefs:
             - group: gateway.networking.k8s.io
               kind: HTTPRoute
-              name: ${oc_generate_name(metadata.componentName, parameters.endpointName)}
+              name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, parameters.endpointName)}'
           headerModifiers:
             response:
               add: ${parameters.addResponseHeaders.headers}

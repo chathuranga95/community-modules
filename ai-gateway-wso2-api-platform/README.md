@@ -655,3 +655,9 @@ See the
 [WSO2 API Platform Gateway module](https://openchoreo.dev/ecosystem/item/?id=wso2-api-platform-gateway) for
 the underlying runtime, optional WSO2 API Manager connectivity, and edge-mode
 deployment — all of which apply unchanged to this AI gateway module.
+
+---
+
+## Compatibility
+
+The `ai-llm-proxy`, `ai-model-routing` and `ai-token-cost-control` traits register each release line's proxy under its own context path, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply the traits from commit [`a87c195`](https://github.com/openchoreo/community-modules/tree/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/ai-gateway-wso2-api-platform).

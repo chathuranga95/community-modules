@@ -125,7 +125,7 @@ spec:
         apiVersion: v1
         kind: Service
         metadata:
-          name: ${metadata.componentName}
+          name: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'
           namespace: ${metadata.namespace}
           labels: ${metadata.labels}
         spec:
@@ -141,7 +141,7 @@ spec:
         apiVersion: gateway.networking.k8s.io/v1
         kind: HTTPRoute
         metadata:
-          name: ${oc_generate_name(metadata.componentName, endpoint.key)}
+          name: '${oc_generate_name(metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName, endpoint.key)}'
           namespace: ${metadata.namespace}
           labels: '${oc_merge(metadata.labels, {"openchoreo.dev/endpoint-name": endpoint.key, "openchoreo.dev/endpoint-visibility": "external"})}'
         spec:
@@ -151,14 +151,14 @@ spec:
           hostnames: |
             ${[gateway.ingress.external.?http, gateway.ingress.external.?https]
               .filter(g, g.hasValue()).map(g, g.value().host).distinct()
-              .map(h, metadata.componentName + "-" + metadata.environmentName + "-" + metadata.componentNamespace + "." + h)}
+              .map(h, (metadata.releaseLineName == "" ? metadata.componentName + "-" + metadata.environmentName + "-" + metadata.componentNamespace : oc_dns_label(metadata.componentLineName, metadata.environmentName, metadata.componentNamespace)) + "." + h)}
           rules:
           - matches:
             - path:
                 type: PathPrefix
                 value: /
             backendRefs:
-            - name: ${metadata.componentName}
+            - name: '${metadata.releaseLineName == "" ? metadata.componentName : metadata.componentLineName}'
               port: ${endpoint.value.port}
 
     # ── ConfigMap: plain env vars from the Configuration API ─────────────

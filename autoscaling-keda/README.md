@@ -23,11 +23,11 @@ In HTTP mode the component scales to zero when idle, and the first request wakes
 
 The trait assumes every data plane it targets runs KEDA. Mixed fleets, where only some data planes run KEDA, are a separate design still being worked out; for now keep the data planes a component promotes across identical.
 
-You need OpenChoreo 1.2 or later. For the architecture, tuning, and extension details, see [CONFIGURATION.md](./CONFIGURATION.md).
+You need OpenChoreo v1.4.0 or later. For OpenChoreo v1.2.x and v1.3.x, see [Compatibility](#compatibility). For the architecture, tuning, and extension details, see [CONFIGURATION.md](./CONFIGURATION.md).
 
 ## Prerequisites
 
-- An OpenChoreo 1.2+ control plane and data plane. For a fresh local cluster, follow the [single-cluster k3d guide](https://github.com/openchoreo/openchoreo/blob/main/install/k3d/single-cluster/README.md) through step 5.
+- An OpenChoreo v1.4.0+ control plane and data plane, or the older trait in [Compatibility](#compatibility) for v1.2.x and v1.3.x. For a fresh local cluster, follow the [single-cluster k3d guide](https://github.com/openchoreo/openchoreo/blob/main/install/k3d/single-cluster/README.md) through step 5.
 - `kubectl`, `helm`, `jq`, `yq`, and access to the cluster.
 - The data-plane gateway needs to be kgateway, which is the OpenChoreo default. For other Gateway API implementations, see [CONFIGURATION.md](./CONFIGURATION.md).
 
@@ -214,3 +214,7 @@ kubectl delete \
 # optionally:
 # helm uninstall keda-add-ons-http keda -n keda
 ```
+
+## Compatibility
+
+The `keda-scaling` trait names its KEDA objects and routing after each release line, which needs OpenChoreo v1.4.0 or later. For OpenChoreo v1.3.x and earlier, apply `keda-scaling-trait.yaml` from commit [`a87c195`](https://github.com/openchoreo/community-modules/blob/a87c1951d46fbe1cd8ee4837de7216f94b6342e3/autoscaling-keda/keda-scaling-trait.yaml).
